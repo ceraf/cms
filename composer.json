@@ -1,0 +1,20 @@
+{
+    "name": "sacprd/bad_links",
+    "license": "MIT",
+    "type": "project",
+    "description": "Search bad links",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src"
+        }
+    },
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "config": {
+        "platform": {
+            "php": "5.5.9"
+        },
+        "sort-packages": true
+    }
+}
