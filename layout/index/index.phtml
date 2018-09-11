@@ -1,1 +1,76 @@
-<div>Default index page</div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Задачи</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+<?php if ($params['msg']): ?>
+	<?php foreach($params['msg']['success'] as $msg): ?>
+        <div class="alert alert-success alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <?php echo $msg; ?>            
+        </div>
+	<?php endforeach; ?>
+<?php endif; ?>			
+<div style="margin-bottom: 15px">
+    <a href="/index/add"><button type="button" class="btn btn-primary" >Добавить задачу</button></a>
+</div>
+<?php if ($params['tasks']): ?>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover dataTable no-footer dtr-inline">
+                                    <thead>
+                                        <tr>
+                                            <th <?php if ($params['sortby'] == 'id'): ?>class="sorting_<?php echo $params['sorttype'] ?>"<?php endif;?> style="width: 5%"><a sort-by="id" href="javascript:void(0)">№</a></th>
+                                            <th <?php if ($params['sortby'] == 'description'): ?>class="sorting_<?php echo $params['sorttype'] ?>"<?php endif;?>><a sort-by="description" href="javascript:void(0)">Задача</a></th>
+                                            <th <?php if ($params['sortby'] == 'username'): ?>class="sorting_<?php echo $params['sorttype'] ?>"<?php endif;?>  style="width: 20%"><a sort-by="username" href="javascript:void(0)">Пользователь</a></th>
+                                            <th <?php if ($params['sortby'] == 'is_done'): ?>class="sorting_<?php echo $params['sorttype'] ?>"<?php endif;?> style="width: 5%"><a sort-by="is_done" href="javascript:void(0)">Вып</a></th>
+                                            <?php if ($user && ($user->getUsername() == 'admin')): ?><th style="width: 10px"></th><?php endif; ?>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+										<?php foreach ($params['tasks'] as $task): ?>
+                                        <tr>
+                                            <td style="vertical-align: middle"><?php echo $task->getId() ?></td>
+                                            <td style="vertical-align: middle"><?php echo $task->getShortText() ?></td>
+                                            <td style="vertical-align: middle"><?php echo $task->getUsername() ?></td>
+                                            <td style="vertical-align: middle"><input type="checkbox" disabled="disavled" <?php if ($task->getIsDone()): ?>checked="checked"<?php endif; ?>></td>
+											<?php if ($user && ($user->getUsername() == 'admin')): ?>
+                                            <td>
+                                                <a href="/index/edit?id=<?php echo $task->getId() ?>"><button type="button" class="btn btn-success btn-circle"><i class="fa fa-edit"></i></button></a>
+                                            </td>
+                                            <?php endif; ?>
+                                        </tr>
+										<?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <?php if ($params['paginator']): ?>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="dataTables_info" role="status" aria-live="polite">Показано с <?php echo $params['paginator']->itemsonpage*$params['paginator']->currpage + 1 ?> по <?php echo ($params['paginator']->itemsonpage*$params['paginator']->currpage + count($params['tasks'])) ?> из <?php echo $params['paginator']->total ?></div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="dataTables_paginate paging_simple_numbers">
+                            <ul class="pagination">
+                                <li class="paginate_button previous <?php if ($params['paginator']->currpage == 0) : ?>disabled<?php endif; ?>" aria-controls="dataTables-example" tabindex="0" id="dataTables-example_previous"><a href="<?php if ($params['paginator']->currpage == 0): ?>javascript:void(0)<?php else: ?>/index/index?p=<?php echo ($params['paginator']->currpage - 1) ?><?php endif; ?>">Пред</a></li>
+                                <?php for ($i = 0; $i < $params['paginator']->numpages; $i++ ): ?>
+                                    <li class="paginate_button <?php if ($params['paginator']->currpage == $i): ?>active<?php endif; ?>" aria-controls="dataTables-example" tabindex="0"><a href="/index/index?p=<?php echo $i ?>"><?php echo ($i + 1) ?></a></li>
+                                <?php endfor; ?>
+                                <li class="paginate_button next <?php if ($params['paginator']->currpage == ($params['paginator']->numpages - 1)): ?>disabled<?php endif; ?>" aria-controls="dataTables-example" tabindex="0" id="dataTables-example_next"><a href="<?php if ($params['paginator']->currpage == ($params['paginator']->numpages - 1)): ?>javascript:void(0)<?php else: ?>/index/index?p=<?php echo ($params['paginator']->currpage + 1) ?><?php endif; ?>">След</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+ <?php else: ?>
+ <div>Данные отсутствуют</div>
+  <?php endif; ?>

@@ -1,0 +1,112 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header"><?php if ($params['mode'] == 'edit'): ?>Редактировать задачу<?php else: ?>Создать задачу<?php endif;?></h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<?php if ($params['errors']): ?>
+    <?php foreach($params['errors'] as $error): ?>
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <?php echo $error ?>              
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel-body">
+            <form role="form" id="task-form" action="" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="hidden" name="is_done" value="0" >
+                                    <input <?php if ($params['mode'] == 'add'): ?>disabled="disabled"<?php endif; ?> type="checkbox" name="is_done" <?php if ($params['task'] && $params['task']->getIsDone()): ?>checked="checked"<?php endif; ?> value="1">Выполнена
+                                </label>
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="col-lg-6">     
+                        <div class="form-group">
+                            <label>Имя пользователя</label>
+                            <input <?php if ($params['mode'] == 'edit'): ?>disabled="disabled"<?php endif; ?> class="form-control" type="text" required name="username" value="<?php echo ($params['task']) ? $params['task']->getUsername() : '' ?>" >
+                        </div>           
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input <?php if ($params['mode'] == 'edit'): ?>disabled="disabled"<?php endif; ?> class="form-control" required type="text"  name="email" value="<?php echo ($params['task']) ? $params['task']->getEmail() : '' ?>" >
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label>Текст задачи</label>
+                            <textarea name="description" class="form-control" required rows="4"><?php echo ($params['task']) ? $params['task']->getDescription() : '' ?></textarea>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label>Изображение (320х240)</label>
+                            <div class="preview_field">
+                                <div id="preview_file_name"></div>
+                                <a href="javascript:void(0)"><img class="img-responsive" src="/<?php if ($params['task'] && $params['task']->getPreview()): echo 'images/'.$params['task']->getPreview(); else: ?>images/no-preview-big.jpg<?php endif ?>" /></a>
+                                <input id="preview_fiels" type="hidden" name="preview" value="<?php echo ($params['task']) ? $params['task']->getPreview() : '' ?>" >
+                                <?php if ($params['mode'] == 'add'): ?>
+                                <input  type="file" style="display: none" name="preview" >
+                                <div class="img-btn">
+                                    <button id="add_img" type="button" class="btn btn-primary btn-circle btn-lg"><i class="fa fa-file-o"></i></button>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>            
+                    </div>
+                    <div class="col-lg-12" style="border-top: 1px solid; margin-top: 10px; padding-top: 20px">
+                        <div class="form-group">
+                            <button type="button" onClick="document.location='/'" class="btn btn-default">Вернуться к списку</button>
+                            <?php if ($params['mode'] == 'add'): ?><button type="button" id="quickview" class="btn btn-default">Предварительный просмотр</button><?php endif; ?>
+                            <button type="submit" class="btn btn-success">Сохранить</button>                        
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="quickview-page" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="panel-title">Предварительный просмотр</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+  <tbody>
+    <tr>
+      <td>Имя пользователя</td>
+      <td id="q_username"></td>
+    </tr>
+    <tr>
+      <td>E-mail</td>
+      <td id="q_email"></td>
+    </tr>
+    <tr>
+      <td>Задача</td>
+      <td id="q_description"></td>
+    </tr>
+    <tr>
+      <td>Изображение</td>
+      <td id="q_preview"></td>
+    </tr>
+  </tbody>
+</table>
+      </div>
+
+    </div>
+  </div>
+</div>

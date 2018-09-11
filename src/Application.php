@@ -17,9 +17,11 @@ class Application
 
     public function exec()
     {
+        session_start();
         $route = $this->findAction();
         $controllername = '\\App\\Controllers\\' .	ucfirst($route['controller']).'Controller';
-        $this->response = (new $controllername($this->request))->index();
+        $method = $route['action'];
+        $this->response = (new $controllername($this->request))->$method();
         
         return $this;
     }
@@ -31,10 +33,13 @@ class Application
 
 	private function findAction()
 	{
-		$params = explode('/', $this->request->getServer('REQUEST_URI'));
-		$controller = $params[1] ?? null;
-		$action = $params[2] ?? 'index';
-		
+        $query = $this->request->getServer('REQUEST_URI');
+        if (strpos($query, '?') !== false)
+            $query = substr($query, 0, strpos($query, '?'));
+		$params = explode('/', $query);
+		$controller = (isset($params[1]) && $params[1]) ? $params[1] : 'index';
+        $action = (isset($params[2]) && $params[2]) ? $params[2] : 'index';
+        
 		if (!($controller && class_exists('\\App\\Controllers\\' .	ucfirst($controller).'Controller'))) {
 			$controller = 'Notfound';
 			$action = 'index';

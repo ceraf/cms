@@ -9,6 +9,6 @@ class NotfoundController extends Controller
 {
     public function index()
     {
-        return new Response('404/index', '404');
+        return (new Response('404/index'))->setCode(404);
     }
 }
