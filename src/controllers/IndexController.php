@@ -28,7 +28,8 @@ class IndexController extends Controller
             
         if ($this->request->getPost('sort_by') &&
                 in_array($sortby, ['username', 'description', 'is_done', 'id'])) {
-            $sorttype = ($sortby == $this->request->getPost('sort_by')) ? 'DESC' : 'ASC';       
+            if ($sortby == $this->request->getPost('sort_by'))
+                $sorttype = ($sorttype == 'ASC') ? 'DESC' : 'ASC';       
             $sortby = $this->request->getPost('sort_by');
             $this->setSession('sort_by', $sortby);
             $this->setSession('sort_type', $sorttype);
