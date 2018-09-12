@@ -15,23 +15,28 @@ class Request
     
     public function getParam($key)
     {
-        return $getparam[$key] :: null;
+        return $this->getparam[$key] ?? null;
     }
 
     public function getPost($key)
     {
-        return $postparam[$key] :: null;
+        return $this->postparam[$key] ?? null;
     }
     
     public function isPost()
     {
-        return (empty($postparam)) ? false : true;
+        return (empty($this->postparam)) ? false : true;
     }
 	
 	public function getServer($key)
 	{
 		return $this->server[$key];
 	}
+    
+    public function getFile($name)
+    {
+        return $_FILES[$name] ?? null;
+    }
     
     private function init()
     {
@@ -46,7 +51,6 @@ class Request
                 $this->setPost($key, $item);
             }
         }
-		
         foreach ($_SERVER as $key => $item) {
             $this->setServer($key, $item);
         }	

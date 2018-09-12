@@ -10,12 +10,14 @@ class Response
 	];	
 	
 	private $view;
-	private $headers;
+	private $headers = [];
+    private $params;
 	
-	public function __construct ($view, $header = '200')
+	public function __construct ($view, $params = null)
 	{
 		$this->view = $view;
-		$this->headers = [self::HEADER_TITLE[$header]];
+        $this->params = $params;
+		//$this->headers = [self::HEADER_TITLE[200]];
 	}
 	
 	public function getView()
@@ -23,6 +25,12 @@ class Response
 		return $this->view;
 	}
 	
+    public function setCode($code)
+    {
+        $this->headers = [self::HEADER_TITLE[$code]];
+        return $this;
+    }
+    
 	public function setHeader($title)
 	{
 		$this->headers[] = $title;
@@ -33,4 +41,9 @@ class Response
 	{
 		return $this->headers;
 	}
+    
+    public function getParams()
+    {
+        return $this->params;
+    }
 }

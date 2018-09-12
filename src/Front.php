@@ -32,11 +32,10 @@ class Front
     
     private function invokeView(Response $response)
     {
-      //  echo LAYOUT_DIR;
 		foreach ($response->getHeaders() as $title) {
 			header($title);
 		}
-        
+        $params = $response->getParams();
         ob_start();
         include(LAYOUT_DIR . '/' . $response->getView().'.phtml');
         $content = ob_get_contents();

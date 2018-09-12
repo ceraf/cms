@@ -1,20 +1,22 @@
 {
-    "name": "sacprd/bad_links",
+    "name": "sac/test_task",
     "license": "MIT",
     "type": "project",
-    "description": "Search bad links",
+    "description": "Tasks",
+    "config": {
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "7.1"
+        },
+        "sort-packages": true
+    },
     "autoload": {
         "psr-4": {
             "App\\": "src"
         }
     },
     "require": {
-        "php": ">=5.5.9"
-    },
-    "config": {
-        "platform": {
-            "php": "5.5.9"
-        },
-        "sort-packages": true
+        "php": ">=7.1",
+        "doctrine/orm": "^2.5"
     }
 }
