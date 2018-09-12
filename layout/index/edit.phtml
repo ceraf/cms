@@ -50,7 +50,7 @@
                             <label>Изображение (320х240)</label>
                             <div class="preview_field">
                                 <div id="preview_file_name"></div>
-                                <a href="javascript:void(0)"><img class="img-responsive" src="/<?php if ($params['task'] && $params['task']->getPreview()): echo 'images/'.$params['task']->getPreview(); else: ?>images/no-preview-big.jpg<?php endif ?>" /></a>
+                                <a href="javascript:void(0)"><img class="img-responsive" src="/public/<?php if ($params['task'] && $params['task']->getPreview()): echo 'images/'.$params['task']->getPreview(); else: ?>images/no-preview-big.jpg<?php endif ?>" /></a>
                                 <input id="preview_fiels" type="hidden" name="preview" value="<?php echo ($params['task']) ? $params['task']->getPreview() : '' ?>" >
                                 <?php if ($params['mode'] == 'add'): ?>
                                 <input  type="file" style="display: none" name="preview" >
