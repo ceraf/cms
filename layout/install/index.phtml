@@ -1,0 +1,54 @@
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Настройка БД</h1>
+		<p>Перед началом работы с программой необходимо настроить подключение к БД.</p>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<?php if ($params['errors']): ?>
+    <?php foreach($params['errors'] as $error): ?>
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <?php echo $error ?>              
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel-body">
+            <form role="form" action="" method="POST">
+                <div class="row">
+					<div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Имя БД</label>
+                            <input class="form-control" required type="text"  name="dbname" value="" >
+                        </div>
+                    </div>
+					<div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Адрес БД</label>
+                            <input class="form-control" required type="text"  name="address" value="" >
+                        </div>
+                    </div>
+                    <div class="col-lg-6">     
+                        <div class="form-group">
+                            <label>Имя пользователя</label>
+                            <input class="form-control" type="text" required name="username" value="" >
+                        </div>           
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Пароль</label>
+                            <input class="form-control" required type="password"  name="password" value="" >
+                        </div>
+                    </div>
+                    <div class="col-lg-12" style="border-top: 1px solid; margin-top: 10px; padding-top: 20px">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">Сохранить</button>                        
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
