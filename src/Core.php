@@ -42,17 +42,4 @@ class Core
 	{
 		unset($_SESSION[$name]);
 	}
-    
-    public function getCurrUser()
-    {
-        $id = $this->getSession('user_id') ?? null;
-        $user = null;
-        if ($id) {
-            $user = $this->getEntityManager()
-                ->getRepository('\App\Models\User')
-                ->find($id);
-        }
-        
-        return $user;
-    }
 }

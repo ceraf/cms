@@ -28,9 +28,12 @@ class Request
         return (empty($this->postparam)) ? false : true;
     }
 	
-	public function getServer($key)
+	public function getServer($key = null)
 	{
-		return $this->server[$key];
+        if (!$key)
+            return $this->server;
+        else
+            return $this->server[$key];
 	}
     
     public function getFile($name)

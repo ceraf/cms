@@ -4,6 +4,7 @@ namespace App;
 
 use App\Request;
 use App\Response;
+use App\Core;
 
 class Application
 {
@@ -21,8 +22,12 @@ class Application
         $route = $this->findAction();
         $controllername = '\\App\\Controllers\\' .	ucfirst($route['controller']).'Controller';
         $method = $route['action'];
-        $this->response = (new $controllername($this->request))->$method();
-        
+        $em = Core::getInstance()->getEntityManager();
+        if ($em)
+            $this->response = (new $controllername($this->request))->$method();
+        else
+            $this->response = (new \App\Controllers\InstallController ($this->request))->index();
+            
         return $this;
     }
 

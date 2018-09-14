@@ -13,17 +13,29 @@ abstract class Controller
     public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->user = Core::getInstance()->getCurrUser();
+    }
+    
+    protected function notFound()
+    {
+        return (new \App\Controllers\NotfoundController($this->request))->index();
+    }
+    
+    protected function isAjax()
+    {
+        $server = $this->request->getServer();
+        if (
+            isset($server['HTTP_X_REQUESTED_WITH']) && 
+            !empty($server['HTTP_X_REQUESTED_WITH']) &&
+            (strtolower($server['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+        )
+            return true;
+        else
+            return false;
     }
     
     protected function getEntityManager()
     {
         return Core::getInstance()->getEntityManager();
-    }
-
-    protected function isAdmin()
-    {
-        return ($this->user && ($this->user->getUsername() == 'admin'));
     }
     
 	protected function setFlashMessage($type, $msg)

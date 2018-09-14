@@ -5,6 +5,8 @@ namespace App;
 use App\Request;
 use App\Application;
 use App\Response;
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
 
 class Front
 {
@@ -19,7 +21,21 @@ class Front
     
     private function init()
     {
-     ;//   echo 'init';
+		$dbParams = null;
+		if (file_exists(PROJECT_DIR.'/config/config.php'))
+			include (PROJECT_DIR.'/config/config.php');
+		
+		$paths = array("/path/to/entity-files");
+		$isDevMode = false;
+		try {
+			$config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode);
+			$entityManager = EntityManager::create($dbParams, $config);
+			\App\Core::getInstance()->setEntityManager($entityManager);
+            $entityManager->find('\App\Models\Setting', 123);
+		} catch (\Exception $e) {
+			\App\Core::getInstance()->setEntityManager(null);
+		}
+
     }
     
     private function processRrequest()
