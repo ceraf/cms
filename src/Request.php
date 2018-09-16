@@ -15,12 +15,14 @@ class Request
     
     public function getParam($key)
     {
-        return $this->getparam[$key] ?? null;
+      //  return $this->getparam[$key] ?? null;
+		return (isset($this->getparam[$key])) ? $this->getparam[$key] : null;
     }
 
     public function getPost($key)
     {
-        return $this->postparam[$key] ?? null;
+      //  return $this->postparam[$key] ?? null;
+		return (isset($this->postparam[$key])) ? $this->postparam[$key] : null;
     }
     
     public function isPost()
@@ -38,7 +40,8 @@ class Request
     
     public function getFile($name)
     {
-        return $_FILES[$name] ?? null;
+    //    return $_FILES[$name] ?? null;
+		return (isset($_FILES[$name])) ? $_FILES[$name] : null;
     }
     
     private function init()

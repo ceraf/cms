@@ -1,23 +1,31 @@
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">Тестирование</h1>
+        <h1 class="page-header">Проверка сайта</h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
+<?php if ($params['errors']): ?>
+    <?php foreach($params['errors'] as $error): ?>
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <?php echo $error ?>              
+        </div>
+    <?php endforeach; ?>
+<?php endif; ?>
 <div class="row">
     <div class="col-lg-12">
         <div class="panel-body">
-            <form role="form" action="/index/test" method="POST" id="test-form">
+            <form role="form" action="/index/checkDomain" method="POST" id="checkdomain">
                 <div class="row">
                     <div class="col-lg-12">     
                         <div class="form-group">
-                            <label>Уровень интеллекта</label>
-                            <input class="form-control" id="level" type="number" required name="level" value="0" >
+                            <label>Адрес сайта</label>
+                            <input class="form-control" type="url" placeholder="http://www.domain.com" required name="url" id="url" value="<?php echo ($params['url'] ? $params['url'] : '') ?>" >
                         </div>           
                     </div>
                     <div class="col-lg-12">
                         <div class="form-group">
-                            <button type="submit" class="btn btn-success">Запустить тест</button>                        
+                            <button type="submit" class="btn btn-success">Проверить</button>                        
                         </div>
                     </div>
                 </div>
@@ -25,7 +33,25 @@
         </div>
     </div>
 </div>
-            <div class="row" style="display: none" id="test_result">
+<div class="row" id="msg" style="display: none">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <p class="lead">Найдено <span id="find_pages"></span>. Всего битых ссылок - <span id="badsummary"></span>.</p>
+            </div>
+        </div>
+    </div>
+</div> 
+<div class="row" id="process" style="display: none">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <p class="lead">Выполнено <span id="stage"></span> из <span id="summary"></span>.</p>
+            </div>
+        </div>
+    </div>
+</div> 
+            <div class="row" id="test_result">
                 <div class="col-lg-12">
                     <div class="panel panel-default">
                         <div class="panel-body">
@@ -33,11 +59,9 @@
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th>№</th>
-                                            <th>ID</th>
-                                            <th>Использовался, раз</th>
-                                            <th>Сложность</th>
-                                            <th>Ответ</th>
+                                            <th>Ссылка</th>
+                                            <th>Страница</th>
+                                            <th>Код</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table_body">
@@ -48,12 +72,4 @@
 					</div>
 				</div>
 			</div>
-<div class="row" id="msg" style="display: none">
-    <div class="col-lg-12">
-        <div class="panel panel-default">
-            <div class="panel-body">
-                <p class="lead">Тестируемый ответил правильно на <span id="success_count"></span> вопросов из <span id="all_count"></span>.</p>
-            </div>
-        </div>
-    </div>
-</div> 
+

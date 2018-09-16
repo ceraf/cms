@@ -47,7 +47,9 @@ abstract class Controller
 	
 	protected function getFlashMessage()
 	{
-		$msg = Core::getInstance()->getSession('flash') ?? null;
+	//	$msg = Core::getInstance()->getSession('flash') ?? null;
+		$msg = Core::getInstance()->getSession('flash');
+	//	$msg = (isset(Core::getInstance()->getSession('flash'))) ? Core::getInstance()->getSession('flash') : null;
 		if ($msg)
 			Core::getInstance()->clearSession('flash');
 		return $msg;

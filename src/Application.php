@@ -23,7 +23,7 @@ class Application
         $controllername = '\\App\\Controllers\\' .	ucfirst($route['controller']).'Controller';
         $method = $route['action'];
         $em = Core::getInstance()->getEntityManager();
-        if ($em)
+        if ($em || !USE_DB)
             $this->response = (new $controllername($this->request))->$method();
         else
             $this->response = (new \App\Controllers\InstallController ($this->request))->index();

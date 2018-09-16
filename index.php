@@ -3,6 +3,7 @@
 define ('PROJECT_DIR', __DIR__);
 define ('LAYOUT_DIR', PROJECT_DIR.'/layout');
 define ('CONTROLLER_DIR', PROJECT_DIR.'/controllers');
+define ('USE_DB', '0');
 
 require __DIR__.'/vendor/autoload.php';
 

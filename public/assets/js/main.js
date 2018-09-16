@@ -1,18 +1,31 @@
+var num_pages;
+var stage;
 
 $(function() {
     
-    $('#test-form').submit(function(e){
-        var level = $('#level').val();
+    $('#checkdomain').submit(function(e){
+		$('#table_body').html('');
+		$('#msg').hide();
+		$('#process').hide();
 		$.post(
 			$(this).attr('action'),
 			$(this).serialize(),
 			function (data) { 
-				if (data.status == 'success')
-					displayTest(data.data);
+				if (data.status == 'success') {
+					num_pages = data.data.num;
+					stage = 0;
+					if (data.data.bad)
+						displayBad(data.data.bad, data.data.url);
+					$('#stage').text(stage);
+					$('#summary').text(num_pages);
+					$('#msg').hide();
+					$('#process').show();
+					nextStage();
+				}
 				else if (data.status == 'error')
 					alert(data.data[0]);
 				else
-					alert('GПри передачи данных произошла ошибка.');
+					alert('При передачи данных произошла ошибка.');
 			},
 			'json'
 		); 
@@ -20,25 +33,50 @@ $(function() {
 		return false;
     })
 	
-	function displayTest(data)
+	function nextStage()
+	{
+		//alert(stage);
+		$('#stage').text(stage);
+		$('#summary').text(num_pages);
+		$.post(
+			'/index/next',
+			'stage=' + stage,
+			function (data) { 
+				if (data.status == 'success') {
+					num_pages = data.data.num;
+					stage++;
+					if (data.data.bad)
+						displayBad(data.data.bad, data.data.url);
+					if (stage < num_pages)
+						nextStage();
+					else {
+						$('#process').hide();		
+						$('#find_pages').text(num_pages);
+						$('#badsummary').text($('#table_body').find('tr').length);
+						$('#msg').show();
+					}
+				}
+				else if (data.status == 'error')
+					alert(data.data[0]);
+				else
+					alert('При передачи данных произошла ошибка.');
+			},
+			'json'
+		); 
+	}
+	
+	function displayBad(data, url)
 	{ 
-		var done = 0;
-		var i = 0;
-		$('#table_body').html('');
 		for (var key in data) {
-			i++;
-			var td = '<td>' + key + '</td>';
-			td += '<td>' + data[key].id + '</td>';
-			td += '<td>' + data[key].num + '</td>';
-			td += '<td>' + data[key].complexity + '</td>';
-			td += '<td>' + data[key].test + '</td>';
-			done += parseInt(data[key].is_success);
+			var td ='<td>' + key + '</td>';
+			td += '<td>' + url + '</td>';
+			td += '<td>' + data[key] + '</td>'
 			$('<tr>' + td + '</tr>').appendTo($('#table_body'));
 			
 		}
-		$('#all_count').text(i);
-		$('#success_count').text(done);
-		$('#test_result').show();
-		$('#msg').show();
+	//	$('#all_count').text(i);
+	//	$('#success_count').text(done);
+	//	$('#test_result').show();
+	//	$('#msg').show();
 	}
 });
