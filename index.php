@@ -8,4 +8,3 @@ define ('USE_DB', '0');
 require __DIR__.'/vendor/autoload.php';
 
 \App\Front::run();
-
