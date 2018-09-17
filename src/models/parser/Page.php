@@ -8,6 +8,7 @@ class Page
 {
     const SEARCH_LINKS = '/<(link|a|img|script)(.*?)(href|src)=("|\')(.*?)("|\')/is';
     const SEARCH_PAGES = '/<a(.*?)href=("|\')(.*?)("|\')/is';
+	const MAX_TIMEOUT = 4000;
     private $content = null;
     
 	private $url;
@@ -31,14 +32,14 @@ class Page
         foreach ($res[0] as $key => $item) {
             if ($res[5][$key] && (($res[5][$key][0] == '/') || strpos($res[5][$key], 'http') !== false)) {
 				if (strpos($res[5][$key], '//') === 0)
-					$res[5][$key] = substr($res[5][$key], 2);
-				if ($res[5][$key][0] == '/')
+					$res[5][$key] = $this->scheme.':'.$res[5][$key];
+				elseif ($res[5][$key][0] == '/')
 					$res[5][$key] = $this->scheme.'://'.$this->domain.$res[5][$key];
                 $urls[] = ['type' => $res[1][$key], 'url' => $res[5][$key]];
 			}
         }
         $this->links = array_map("unserialize", array_unique(array_map("serialize", $urls)));
-		
+
 		return $this;
     }
     
@@ -52,6 +53,7 @@ class Page
 				$res = [];
 				$codes = [];
 			}
+
 			foreach ($this->links as $link) {
 				if (isset($codes[$link['url']])) {
 					$res[$link['url']] = $codes[$link['url']];
@@ -60,17 +62,29 @@ class Page
 			}
 			
 			if ($needcherch) {
+                
 				$info = $this->getCodes($needcherch);
+                foreach ($info as $url => &$code) {
+                    if (!$this->isDoaminUrl($url) && in_array($code, ['302','400']))
+                        $code = 200;
+                    if ($code == 0)
+                         $code = 'Not found';
+                }
 				$res = array_merge($res, $info);
 				$codes = array_merge($codes, $info);
+                
 				/*
 				foreach ($needcherch as $link) {
 					$linkinfo = $this->cURL($link);
-					//$res[$link] = $this->getLinkCode($link);
+                    if ($linkinfo['info']['http_code'] == 0)
+                        $linkinfo['info']['http_code'] = 'Not found';
+                    if (!$this->isDoaminUrl($link) && in_array($linkinfo['info']['http_code'], ['302','400']))
+                        $linkinfo['info']['http_code'] = 200;
 					$codes = array_merge($codes, [$link => $linkinfo['info']['http_code']]);
 					$res[$link] = $linkinfo['info']['http_code'];
 				}
 				*/
+                
 				Core::getInstance()->setSession($this->getSessionCode(), $codes);
 			}	
 			
@@ -90,11 +104,13 @@ class Page
 	{
 		$num = 7;
 		$res = [];
+
 		for ($i = 0; $i < count($links); $i += $num) {
 			$tmpurls = array_slice($links, $i, $num);
 			$linkinfo = $this->multicURL($tmpurls);
-			$codes = array_column($linkinfo, 'http_code');
-			$res = array_merge($res, array_combine(array_keys($linkinfo), $codes));
+			
+			$codes = array_column($linkinfo, 'http_code', 'url');
+			$res = array_merge($res, $codes);
 		//	var_dump($res); exit;
 		}
 		return $res;
@@ -105,8 +121,7 @@ class Page
 		$res = null;
 		if ($this->links && !empty($this->links)) {
 			foreach ($this->links as $link) {
-				$pos = strpos($link['url'], $this->domain);
-				if (($link['type'] == 'a') && (($pos > 0) && ($pos < 10))) {
+				if (($link['type'] == 'a') && $this->isDoaminUrl($link['url'])) {
 					$info = pathinfo($link['url']);
 					if (!isset($info['extension']) || in_array($info['extension'], ['php','htm','html']))
 						$res[] = $link['url'];
@@ -128,6 +143,12 @@ class Page
 		return 'code_'.$this->domain;
 	}
 	
+    private function isDoaminUrl($url)
+    {
+        $pos = strpos($url, $this->domain);
+        return (($pos > 0) && ($pos < 10));
+    }
+    
 	private function getLinkCode($link)
 	{
 		/*
@@ -158,13 +179,15 @@ class Page
     	curl_setopt($$curlname, CURLOPT_NOBODY, !$body);
     	curl_setopt($$curlname, CURLOPT_URL, $url);
     	curl_setopt($$curlname, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($$curlname, CURLOPT_CONNECTTIMEOUT, 0); 
+		curl_setopt($$curlname, CURLOPT_TIMEOUT_MS, self::MAX_TIMEOUT); //timeout in seconds
     	curl_setopt($$curlname, CURLOPT_COOKIE, $cookie);
 
-	 //	curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.1.3) Gecko/20090824 Firefox/3.5.3 GTB5"); 
+	 	curl_setopt($$curlname, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.1.3) Gecko/20090824 Firefox/3.5.3 GTB5"); 
 
     	curl_setopt($$curlname, CURLOPT_RETURNTRANSFER, 1);
     	curl_setopt($$curlname, CURLOPT_SSL_VERIFYPEER, 0);
-    	curl_setopt($$curlname, CURLOPT_FOLLOWLOCATION, 1);
+    	curl_setopt($$curlname, CURLOPT_FOLLOWLOCATION, 0);
 					/*
 					curl_setopt($$curlname, CURLOPT_URL, $url);
 					curl_setopt($$curlname, CURLOPT_HEADER, 0);
@@ -204,6 +227,8 @@ class Page
     	curl_setopt($ch, CURLOPT_NOBODY, !$body);
     	curl_setopt($ch, CURLOPT_URL, $url);
     	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0); 
+curl_setopt($ch, CURLOPT_TIMEOUT, 5); //timeout in seconds
     	curl_setopt($ch, CURLOPT_COOKIE, $cookie);
 
 	 //	curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.1.3) Gecko/20090824 Firefox/3.5.3 GTB5"); 
@@ -220,17 +245,29 @@ class Page
 		
     	$result = curl_exec($ch);
 		$info = curl_getinfo($ch);
-		
+
 		curl_close($ch);
 		
 		return ['content' => $result, 'info' => $info];
     }
 	
     private function getContent()
-    {
+    {/*
         if (!$this->content) {
             $this->content = file_get_contents($this->url);
         }
+        return $this->content;
+       */
+        if (!$this->content) {
+            $num = 5;
+            $i = 0;
+            do {
+                $i++;
+                $res = $this->cURL($this->url);
+                $this->content = $res['content'];
+            } while((!$this->content) && ($i < $num));
+        }
+		
         return $this->content;
     }
 }

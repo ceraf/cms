@@ -1,12 +1,22 @@
 var num_pages;
 var stage;
+var needstop  = 0;
 
 $(function() {
     
+	$('#stopproc').click(function(e){
+		needstop = 1;
+		$(this).attr('disabled', 'disabled');
+	})
+	
     $('#checkdomain').submit(function(e){
 		$('#table_body').html('');
 		$('#msg').hide();
+		$('#loader').show();
 		$('#process').hide();
+		needstop = 0;
+        $('[rel=proc]').attr('disabled', 'disabled');
+		$('#stopproc').removeAttr('disabled', 'disabled');
 		$.post(
 			$(this).attr('action'),
 			$(this).serialize(),
@@ -20,12 +30,22 @@ $(function() {
 					$('#summary').text(num_pages);
 					$('#msg').hide();
 					$('#process').show();
-					nextStage();
+					if (!needstop)
+						nextStage();
+					else {
+						$('[rel=proc]').removeAttr('disabled');
+						$('#loader').hide();
+					}
 				}
-				else if (data.status == 'error')
-					alert(data.data[0]);
-				else
+				else if (data.status == 'error') {
+                    $('[rel=proc]').removeAttr('disabled');
+                    alert(data.data[0]);
+					$('#loader').hide();
+				} else {
 					alert('При передачи данных произошла ошибка.');
+                    $('[rel=proc]').removeAttr('disabled');
+					$('#loader').hide();
+                }
 			},
 			'json'
 		); 
@@ -47,19 +67,32 @@ $(function() {
 					stage++;
 					if (data.data.bad)
 						displayBad(data.data.bad, data.data.url);
-					if (stage < num_pages)
-						nextStage();
+					if (stage < num_pages) {
+						if (!needstop)
+							nextStage();
+						else {
+							$('[rel=proc]').removeAttr('disabled');
+							$('#loader').hide();
+						}
+					}
 					else {
 						$('#process').hide();		
 						$('#find_pages').text(num_pages);
 						$('#badsummary').text($('#table_body').find('tr').length);
 						$('#msg').show();
+                        $('[rel=proc]').removeAttr('disabled');
+						$('#loader').hide();
 					}
 				}
-				else if (data.status == 'error')
-					alert(data.data[0]);
-				else
+				else if (data.status == 'error') {
+                    $('[rel=proc]').removeAttr('disabled');
+                    alert(data.data[0]);
+					$('#loader').hide();
+				} else {
 					alert('При передачи данных произошла ошибка.');
+                    $('[rel=proc]').removeAttr('disabled');
+					$('#loader').hide();
+                }
 			},
 			'json'
 		); 

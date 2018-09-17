@@ -26,6 +26,7 @@ class Parser
 		$page->findLinks();
 		$this->badlinks = $page->getBadLinks();
 		$this->pages = $page->getPages();
+		
 		if ($this->badlinks && $this->pages)
 			$this->pages = array_diff ($this->pages, array_keys($this->badlinks));
 		return $this;
@@ -43,7 +44,7 @@ class Parser
 	}
 	
 	public function getPages()
-	{
+	{ 
 		return $this->pages;
 	}
 	/*

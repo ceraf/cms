@@ -89,9 +89,9 @@ class IndexController extends Controller
                 $parser = (new Parser($url))->clearCache()->analysis();
                 $badlinks = $parser->getBadLinks();
 				$pages = $parser->getPages();
-				$this->setSession('pages', $pages);
+				$this->setSession('pages', array_values($pages));
 				$this->setSession('badlinks', $badlinks);
-				$data = ['num' => count($pages), 'bad' => $badlinks, 'url' => $url];
+				$data = ['num' => count($pages), 'pages' => $pages, 'bad' => $badlinks, 'url' => $url];
 				$status = 'success';
             } else {
                 $status = 'error';
